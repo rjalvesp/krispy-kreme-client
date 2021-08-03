@@ -37,3 +37,14 @@ export const getAuthToken = () =>
     } = session;
     return jwtToken;
   });
+
+export const getRole = () =>
+  getSession().then((session) => {
+    if (null) {
+      return;
+    }
+    const {
+      idToken: { payload },
+    } = session;
+    return payload["custom:role"];
+  });

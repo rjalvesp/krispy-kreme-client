@@ -26,7 +26,7 @@ const Auth = () => {
             path={`${match.url}/reset-password`}
             component={ResetPassword}
           />
-          <Redirect from="*" to="/sign-in" />
+          <Redirect from="*" to={`${match.url}/sign-in`} />
         </Switch>
       </AuthWrapper>
     </Router>

@@ -4,11 +4,13 @@ import { useHistory, useParams } from "react-router-dom";
 import {
   Button,
   CircularProgress,
+  Grid,
   makeStyles,
   Typography,
 } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import OrderCard from "components/order-cards/OrderCard";
+import OrderLogs from "components/order-logs/OrderLogs";
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -57,7 +59,18 @@ const OrderDetails = () => {
       >
         Dashboard
       </Button>
-      <OrderCard data={data} loading={loading} onStatusChange={saveStatus} />
+      <Grid container spacing={3}>
+        <Grid item xs={6}>
+          <OrderCard
+            data={data}
+            loading={loading}
+            onStatusChange={saveStatus}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <OrderLogs data={data}></OrderLogs>
+        </Grid>
+      </Grid>
     </>
   );
 };

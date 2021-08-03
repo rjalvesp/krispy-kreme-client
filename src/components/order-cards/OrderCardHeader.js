@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as R from "ramda";
 import * as Moment from "moment";
 import {
@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { capitalCase } from "change-case";
 import { MoreVert } from "@material-ui/icons";
 import { statusActionMapper } from "utils/mappers";
+import { getAuthToken, getRole } from "services/UserService";
 
 const getOptions = R.pipe(
   (value) => R.omit([value], statusActionMapper),
@@ -31,6 +32,13 @@ const ItemTitle = styled.div`
 
 const OrderCardHeader = ({ data, loading, classes, onStatusChange }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [canActivate, setCanActivate] = useState(false);
+
+  useEffect(() => {
+    getRole()
+      .then((value) => setCanActivate(value === "ADMIN"))
+      .catch(() => setCanActivate(false));
+  }, [data]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -73,32 +81,34 @@ const OrderCardHeader = ({ data, loading, classes, onStatusChange }) => {
         </Typography>
       }
       action={
-        <>
-          <IconButton aria-label="actions" onClick={handleClick}>
-            <MoreVert />
-          </IconButton>
-          <Menu
-            id="actions"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            {getOptions(status).map((value) => (
-              <MenuItem onClick={() => onStatusClick(value)}>
-                {statusActionMapper[value]}
-              </MenuItem>
-            ))}
-          </Menu>
-        </>
+        canActivate && (
+          <>
+            <IconButton aria-label="actions" onClick={handleClick}>
+              <MoreVert />
+            </IconButton>
+            <Menu
+              id="actions"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              {getOptions(status).map((value) => (
+                <MenuItem onClick={() => onStatusClick(value)}>
+                  {statusActionMapper[value]}
+                </MenuItem>
+              ))}
+            </Menu>
+          </>
+        )
       }
     />
   );

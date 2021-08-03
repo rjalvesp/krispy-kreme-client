@@ -4,11 +4,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Button from "@material-ui/core/Button";
 import { Formik } from "formik";
 import CognitoUserPool from "services/CognitoUserPool";
-import {
-  validateEmail,
-  validatePassword,
-  isFormValid,
-} from "utils/validators";
+import { validateEmail, validatePassword, isFormValid } from "utils/validators";
 import { useHistory } from "react-router";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { NotificationContext } from "contexts/NotificationContext";
@@ -16,11 +12,12 @@ import { KrispyForm } from "components/inputs/KrispyForm";
 import { KrispyInput } from "components/inputs/KrispyInput";
 import { ActionWrapper } from "components/layout";
 import { NavLink } from "react-router-dom";
+import { Checkbox, FormControlLabel, Switch } from "@material-ui/core";
 
 const SignUp = () => {
   const history = useHistory();
 
-  const initialValues = { email: "", username: "", password: "" };
+  const initialValues = { email: "", username: "", role: false, password: "" };
 
   const validate = (values) => {
     const errors = {
@@ -32,7 +29,7 @@ const SignUp = () => {
 
   const onSubmit =
     (setNotification) =>
-    ({ email, password }, { setSubmitting }) => {
+    ({ email, password, role }, { setSubmitting }) => {
       const onSignUp = (err) => {
         setSubmitting(false);
         if (!err) {
@@ -48,6 +45,10 @@ const SignUp = () => {
         new CognitoUserAttribute({
           Name: "email",
           Value: email,
+        }),
+        new CognitoUserAttribute({
+          Name: "custom:role",
+          Value: role ? "ADMIN" : "USER",
         }),
       ];
       CognitoUserPool.signUp(email, password, attributes, null, onSignUp);
@@ -110,8 +111,21 @@ const SignUp = () => {
                     error={errors.password}
                   />
                 </FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="role"
+                      name="role"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  }
+                  label="As Admin"
+                />
                 <ActionWrapper>
-                  <NavLink to="/auth/sign-in" className="action">Already have an account? Sign in</NavLink>
+                  <NavLink to="/auth/sign-in" className="action">
+                    Already have an account? Sign in
+                  </NavLink>
                 </ActionWrapper>
                 <Button
                   type="submit"
@@ -128,6 +142,6 @@ const SignUp = () => {
       </NotificationContext.Consumer>
     </>
   );
-}
+};
 
 export default SignUp;
